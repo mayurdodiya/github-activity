@@ -1,0 +1,33 @@
+name: Random Auto Commit
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Random commit
+        run: |
+          RANDOM_NUM=$((RANDOM % 100))
+
+          if [ $RANDOM_NUM -lt 70 ]; then
+            echo "$(date)" >> activity.txt
+
+            git config --global user.name "github-actions"
+            git config --global user.email "github-actions@github.com"
+
+            git add .
+            git commit -m "update $(date)" || exit 0
+            git push
+          else
+            echo "Skipping commit"
+          fi
